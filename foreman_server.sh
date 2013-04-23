@@ -1,3 +1,7 @@
+# PUPPETMASTER is the fqdn that needs to be resolvable by clients.
+# Change if needed
+export PUPPETMASTER=$(hostname)
+
 # start with a subscribed RHEL6 box
 yum install -y yum-utils yum-rhn-plugin
 
@@ -15,8 +19,6 @@ sudo sed -i 's/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/g' /etc/sysctl.co
 # disable selinux in /etc/selinux/config
 # TODO: selinux policy
 setenforce 0
-
-export PUPPETMASTER='puppet.example.org'
 
 # Set PuppetServer
 augtool -s set /files/etc/puppet/puppet.conf/agent/server $PUPPETMASTER

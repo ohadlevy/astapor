@@ -1,5 +1,5 @@
 # start with a subscribed RHEL6 box
-yum install -y yum-utils yum-rhn-plugin -y
+yum install -y yum-utils yum-rhn-plugin
 
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 yum-config-manager --enable rhel-6-server-optional-rpms

@@ -28,7 +28,7 @@ augtool -s set /files/etc/puppet/puppet.conf/main/pluginsync true
 service iptables stop
 
 # Get foreman-installer modules
-git clone --recursive https://github.com/theforeman/foreman-installer.git /root/foreman-installer
+git clone --recursive https://github.com/theforeman/foreman-installer.git /root/foreman-installer -b 1.1.1
 
 # Install Foreman
 puppet -v --modulepath=/root/foreman-installer -e "include puppet, puppet::server, passenger, foreman_proxy, foreman"

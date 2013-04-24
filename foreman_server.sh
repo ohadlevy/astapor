@@ -2,7 +2,9 @@
 # Change if needed
 export PUPPETMASTER=$(hostname)
 
-# start with a subscribed RHEL6 box
+# start with a subscribed RHEL6 box.  hint:
+#    subscription-manager register
+#    subscription-manager subscribe --auto
 yum install -y yum-utils yum-rhn-plugin
 
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm

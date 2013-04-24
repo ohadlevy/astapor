@@ -41,3 +41,29 @@ git clone --recursive https://github.com/theforeman/foreman-installer.git $workd
 
 # Install Foreman
 puppet -v --modulepath=$workdir/foreman-installer -e "include puppet, puppet::server, passenger, foreman_proxy, foreman"
+
+# write client-register-to-foreman script
+# TODO don't hit yum unless packages are not installed
+cat >/tmp/foreman_client.sh <<EOF
+
+# start with a subscribed RHEL6 box
+#yum install -y yum-utils yum-rhn-plugin -y
+
+rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+#yum-config-manager --enable rhel-6-server-optional-rpms
+yum clean all
+
+# install dependent packages
+yum install -y augeas puppet git policycoreutils-python
+
+# Set PuppetServer
+augtool -s set /files/etc/puppet/puppet.conf/agent/server $PUPPETMASTER
+
+# Puppet Plugins
+augtool -s set /files/etc/puppet/puppet.conf/main/pluginsync true
+
+# check in to foreman
+puppet agent --test
+
+/etc/init.d/puppet start
+EOF

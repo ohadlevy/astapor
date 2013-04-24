@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # PUPPETMASTER is the fqdn that needs to be resolvable by clients.
 # Change if needed
 export PUPPETMASTER=$(hostname)

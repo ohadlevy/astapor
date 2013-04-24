@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # start with a subscribed RHEL6 box
 yum install -y yum-utils yum-rhn-plugin -y
 

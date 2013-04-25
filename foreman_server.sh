@@ -49,6 +49,9 @@ popd
 
 # install puppet modules
 cp -r puppet/* /etc/puppet/modules/production/
+pushd /usr/share/foreman 
+RAILS_ENV=production rake puppet:import:puppet_classes[batch]
+popd
 
 # Configure defaults, host groups, proxy, etc
 ruby foreman-setup.rb proxy

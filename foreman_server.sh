@@ -2,7 +2,6 @@
 
 # PUPPETMASTER is the fqdn that needs to be resolvable by clients.
 # Change if needed
-export PUPPETMASTER=$(hostname)
 
 # start with a subscribed RHEL6 box.  hint:
 #    subscription-manager register
@@ -11,6 +10,9 @@ yum install -y yum-utils yum-rhn-plugin
 
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 yum-config-manager --enable rhel-6-server-optional-rpms
+
+# install puppetlabs repo
+cp puppetlabs.repo /etc/yum.repos.d/
 yum clean all
 
 # install dependent packages
@@ -24,6 +26,7 @@ sudo sed -i 's/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/g' /etc/sysctl.co
 # TODO: selinux policy
 setenforce 0
 
+export PUPPETMASTER=puppet.example.com
 # Set PuppetServer
 augtool -s set /files/etc/puppet/puppet.conf/agent/server $PUPPETMASTER
 
@@ -34,7 +37,7 @@ augtool -s set /files/etc/puppet/puppet.conf/main/pluginsync true
 service iptables stop
 
 workdir=/root
-cd $workdir
+pushd $workdir
 
 # Get foreman-installer modules
 git clone --recursive https://github.com/theforeman/foreman-installer.git $workdir/foreman-installer -b 1.1.1
@@ -42,15 +45,25 @@ git clone --recursive https://github.com/theforeman/foreman-installer.git $workd
 # Install Foreman
 puppet -v --modulepath=$workdir/foreman-installer -e "include puppet, puppet::server, passenger, foreman_proxy, foreman"
 
+popd
+
+# install puppet modules
+cp -r puppet/* /etc/puppet/modules/production/
+
+# Configure defaults, host groups, proxy, etc
+ruby foreman-setup.rb proxy
+ruby foreman-setup.rb globals
+ruby foreman-setup.rb hostgroups
+
+export PUPPETMASTER=$(hostname)
+
 # write client-register-to-foreman script
 # TODO don't hit yum unless packages are not installed
 cat >/tmp/foreman_client.sh <<EOF
 
 # start with a subscribed RHEL6 box
-#yum install -y yum-utils yum-rhn-plugin -y
-
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-#yum-config-manager --enable rhel-6-server-optional-rpms
+yum-config-manager --enable rhel-6-server-optional-rpms
 yum clean all
 
 # install dependent packages
@@ -67,3 +80,13 @@ puppet agent --test
 
 /etc/init.d/puppet start
 EOF
+
+echo "Foreman is installed and almost ready for setting up your OpenStack"
+echo "First, you need to input a few parameters into foreman."
+echo "Visit https://$(hostname)/common_parameters"
+echo ""
+echo "Then copy /tmp/foreman_client.sh to your openstack client nodes"
+echo "Run that script and visit the HOSTS tab in foreman. Pick CONTROLLER"
+echo "host group for your controller node and COMPUTE host group for the rest"
+echo ""
+echo "Once puppet runs on the machines, OpenStack is ready!"

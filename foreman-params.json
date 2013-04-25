@@ -1,0 +1,47 @@
+{
+    "host": {
+	"name": "foreman.example.org",
+	"user": "admin",
+	"passwd": "changeme"
+    },
+    "proxy": {
+	"name": "proxy1",
+	"host": "https://foreman.example.org:8443"
+    },
+    "globals": {
+	"admin_email":            "EDIT ME: EG admin@example.org",
+	"admin_password":         "changeme",
+	"controller_node_public": "EDIT ME: EG 10.100.0.2",
+	"fixed_network_range":    "EDIT ME: EG 10.100.10.0/24",
+	"floating_network_range": "EDIT ME: EG 8.21.28.128/25",
+	"pacemaker_pub_floating_ip":    "EDIT ME: EG 10.100.10.0/24",
+	"pacemaker_priv_floating_ip": "EDIT ME: EG 8.21.28.128/25",
+	"glance_db_password":     "changeme",
+	"glance_user_password":   "changeme",
+	"horizon_secret_key":     "secret",
+	"keystone_admin_token":   "secret",
+	"keystone_db_password":   "changeme",
+	"keystone_password":      "changeme",
+	"mysql_root_password":    "changeme",
+	"nova_db_password":       "changeme",
+	"nova_user_password":     "changeme",
+	"cinder_user_password":     "changeme",
+	"private_interface":      "EDIT ME: em1",
+	"public_interface":       "EDIT ME: em2",
+	"verbose":                "true"
+    },
+    "hostgroups": {
+	"OpenStack Controller": {
+	    "environment": "production",
+	    "puppetclasses": [
+		"trystack::controller"
+	    ]
+	},
+	"OpenStack Nova Compute": {
+	    "environment": "production",
+	    "puppetclasses": [
+		"trystack::compute"
+	    ]
+	}
+    }
+}

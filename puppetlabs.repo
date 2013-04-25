@@ -1,0 +1,6 @@
+[puppet]
+name=puppet
+baseurl=http://yum.puppetlabs.com/el/6Server/products/x86_64/
+failovermethod=priority
+enabled=1
+gpgcheck=0

@@ -26,8 +26,8 @@ sudo sed -i 's/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/g' /etc/sysctl.co
 # TODO: selinux policy
 setenforce 0
 
-export PUPPETMASTER=puppet.example.com
 # Set PuppetServer
+export PUPPETMASTER=puppet.example.com
 augtool -s set /files/etc/puppet/puppet.conf/agent/server $PUPPETMASTER
 
 # Puppet Plugins
@@ -43,18 +43,21 @@ pushd $workdir
 git clone --recursive https://github.com/theforeman/foreman-installer.git $workdir/foreman-installer -b 1.1.1
 
 # Install Foreman
-puppet -v --modulepath=$workdir/foreman-installer -e "include puppet, puppet::server, passenger, foreman_proxy, foreman"
+puppet apply --verbose -e "include puppet, puppet::server, passenger, foreman_proxy, foreman" --modulepath=$workdir/foreman-installer
 
 popd
 
+# Configure defaults, host groups, proxy, etc
+sed -i "s/foreman_hostname/$(hostname)/s" foreman-params.json
+ruby foreman-setup.rb proxy
+
 # install puppet modules
+mkdir -p /etc/puppet/modules/production
 cp -r puppet/* /etc/puppet/modules/production/
 pushd /usr/share/foreman 
 RAILS_ENV=production rake puppet:import:puppet_classes[batch]
 popd
 
-# Configure defaults, host groups, proxy, etc
-ruby foreman-setup.rb proxy
 ruby foreman-setup.rb globals
 ruby foreman-setup.rb hostgroups
 

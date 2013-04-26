@@ -117,6 +117,10 @@ augtool -s set /files/etc/puppet/puppet.conf/agent/server $PUPPETMASTER
 # Puppet Plugins
 augtool -s set /files/etc/puppet/puppet.conf/main/pluginsync true
 
+# Allow puppetrun from foreman/puppet master to work
+# TODO: verify this is sufficient for puppet 3.1
+augtool -s set /files/etc/puppet/puppet.conf/agent/listen true
+
 # check in to foreman
 puppet agent --test
 

@@ -2,6 +2,13 @@
 
 # PUPPETMASTER is the fqdn that needs to be resolvable by clients.
 # Change if needed
+if [ "x$PUPPETMASTER" = "x" ]; then
+  # Set PuppetServer
+  #export PUPPETMASTER=puppet.example.com
+  export PUPPETMASTER=$(hostname)
+fi  
+
+# TODO exit if not in same dir as forem_server.sh, foreman-params.json
 
 # start with a subscribed RHEL6 box.  hint:
 #    subscription-manager register
@@ -26,8 +33,6 @@ sudo sed -i 's/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/g' /etc/sysctl.co
 # TODO: selinux policy
 setenforce 0
 
-# Set PuppetServer
-export PUPPETMASTER=puppet.example.com
 augtool -s set /files/etc/puppet/puppet.conf/agent/server $PUPPETMASTER
 
 # Puppet Plugins
@@ -48,7 +53,7 @@ puppet apply --verbose -e "include puppet, puppet::server, passenger, foreman_pr
 popd
 
 # Configure defaults, host groups, proxy, etc
-sed -i "s/foreman_hostname/$(hostname)/s" foreman-params.json
+sed -i "s/foreman_hostname/$PUPPETMASTER/" foreman-params.json
 ruby foreman-setup.rb proxy
 
 # install puppet modules
@@ -60,8 +65,6 @@ popd
 
 ruby foreman-setup.rb globals
 ruby foreman-setup.rb hostgroups
-
-export PUPPETMASTER=$(hostname)
 
 # write client-register-to-foreman script
 # TODO don't hit yum unless packages are not installed

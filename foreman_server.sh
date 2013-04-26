@@ -53,7 +53,7 @@ puppet apply --verbose -e "include puppet, puppet::server, passenger, foreman_pr
 popd
 
 # Configure defaults, host groups, proxy, etc
-sed -i "s/foreman_hostname/$PUPPETMASTER/s" foreman-params.json
+sed -i "s/foreman_hostname/$PUPPETMASTER/" foreman-params.json
 ruby foreman-setup.rb proxy
 
 # install puppet modules

@@ -8,6 +8,8 @@ if [ "x$PUPPETMASTER" = "x" ]; then
   export PUPPETMASTER=$(hostname)
 fi  
 
+# TODO exit if not in same dir as forem_server.sh, foreman-params.json
+
 # start with a subscribed RHEL6 box.  hint:
 #    subscription-manager register
 #    subscription-manager subscribe --auto
@@ -51,7 +53,7 @@ puppet apply --verbose -e "include puppet, puppet::server, passenger, foreman_pr
 popd
 
 # Configure defaults, host groups, proxy, etc
-sed -i "s/foreman_hostname/$PUPPET_MASTER/s" foreman-params.json
+sed -i "s/foreman_hostname/$PUPPETMASTER/s" foreman-params.json
 ruby foreman-setup.rb proxy
 
 # install puppet modules
@@ -63,8 +65,6 @@ popd
 
 ruby foreman-setup.rb globals
 ruby foreman-setup.rb hostgroups
-
-export PUPPETMASTER=$(hostname)
 
 # write client-register-to-foreman script
 # TODO don't hit yum unless packages are not installed

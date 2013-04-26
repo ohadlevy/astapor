@@ -12,7 +12,7 @@ rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.no
 yum-config-manager --enable rhel-6-server-optional-rpms
 
 # install puppetlabs repo
-cp puppetlabs.repo /etc/yum.repos.d/
+yum -y install https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-7.noarch.rpm
 yum clean all
 
 # install dependent packages

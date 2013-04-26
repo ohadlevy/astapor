@@ -69,6 +69,7 @@ cat >/tmp/foreman_client.sh <<EOF
 
 # start with a subscribed RHEL6 box
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+rpm -Uvh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-7.noarch.rpm
 yum-config-manager --enable rhel-6-server-optional-rpms
 yum clean all
 

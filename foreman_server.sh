@@ -6,14 +6,46 @@ if [ "x$PUPPETMASTER" = "x" ]; then
   # Set PuppetServer
   #export PUPPETMASTER=puppet.example.com
   export PUPPETMASTER=$(hostname)
-fi  
+fi
 
 # TODO exit if not in same dir as forem_server.sh, foreman-params.json
+
+# TODO exit if not >= RHEL 6.4 (check /etc/redhat-release)
 
 # start with a subscribed RHEL6 box.  hint:
 #    subscription-manager register
 #    subscription-manager subscribe --auto
-yum install -y yum-utils yum-rhn-plugin
+
+function install_pkgs {
+  depends=$1
+  install_list=""
+  for dep in $depends; do
+    if ! `rpm -q --quiet --nodigest $dep`; then
+      install_list="$install_list $dep"
+    fi
+  done
+
+  # Install the needed packages
+  if [ "x$install_list" != "x" ]; then
+    sudo yum install -y $install_list
+  fi
+
+  # Verify the dependencies did install
+  fail_list=""
+  for dep in $depends; do
+    if ! `rpm -q --quiet --nodigest $dep`; then
+      fail_list="$fail_list $dep"
+    fi
+  done
+
+  # If anything failed verification, we tell the user and exit
+  if [ "x$fail_list" != "x" ]; then
+      echo "ABORTING:  FAILED TO INSTALL $fail_list"
+      exit 1
+  fi
+}
+
+install_pkgs "yum-utils yum-rhn-plugin"
 
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 yum-config-manager --enable rhel-6-server-optional-rpms
@@ -23,7 +55,7 @@ yum -y install https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-releas
 yum clean all
 
 # install dependent packages
-yum install -y augeas puppet git policycoreutils-python
+install_pkgs "augeas puppet git policycoreutils-python"
 
 # enable ip forwarding
 sudo sysctl -w net.ipv4.ip_forward=1
@@ -59,7 +91,7 @@ ruby foreman-setup.rb proxy
 # install puppet modules
 mkdir -p /etc/puppet/modules/production
 cp -r puppet/* /etc/puppet/modules/production/
-pushd /usr/share/foreman 
+pushd /usr/share/foreman
 RAILS_ENV=production rake puppet:import:puppet_classes[batch]
 popd
 

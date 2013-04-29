@@ -5,19 +5,19 @@
 
 class trystack::controller(){
 
-    pacemaker::corosync { "trystack": }
+    #pacemaker::corosync { "trystack": }
 
-    pacemaker::corosync::node { "10.100.0.2": }
-    pacemaker::corosync::node { "10.100.0.3": }
+    #pacemaker::corosync::node { "10.100.0.2": }
+    #pacemaker::corosync::node { "10.100.0.3": }
 
-    pacemaker::resources::ip { "8.21.28.222":
-        address => "8.21.28.222",
-    }
-    pacemaker::resources::ip { "10.100.0.222":
-        address => "10.100.0.222",
-    }
+    #pacemaker::resources::ip { "8.21.28.222":
+    #    address => "8.21.28.222",
+    #}
+    #pacemaker::resources::ip { "10.100.0.222":
+    #    address => "10.100.0.222",
+    #}
 
-    pacemaker::resources::lsb { "qpidd": }
+    #pacemaker::resources::lsb { "qpidd": }
 
     #pacemaker::stonith::ipmilan { "$ipmi_address":
     #    address  => "$ipmi_address",

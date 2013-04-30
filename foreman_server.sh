@@ -118,8 +118,11 @@ augtool -s set /files/etc/puppet/puppet.conf/agent/server $PUPPETMASTER
 augtool -s set /files/etc/puppet/puppet.conf/main/pluginsync true
 
 # Allow puppetrun from foreman/puppet master to work
-# TODO: verify this is sufficient for puppet 3.1
 augtool -s set /files/etc/puppet/puppet.conf/agent/listen true
+if ! grep -q -P '^path \/run' /etc/puppet/auth.conf; then
+  perl -0777 -p -i -e 's/\n\n((#.*\n)*path \/\s*\n)/\n\npath \/run\nauth any\nmethod save\nallow $PUPPETMASTER\n\n\$1/' /etc/puppet/auth.conf
+fi
+# for older versions of puppet, also need to "touch /etc/puppet/namespace.auth"
 
 # check in to foreman
 puppet agent --test

@@ -88,6 +88,24 @@ def create_puppetos(puppetos)
   end
 end
 
+def update(cmd, data)
+  response = @client[cmd].put(data)
+rescue RestClient::UnprocessableEntity => e
+  @log.warn("PUT KO: #{data} => #{e.response}")
+else
+  @log.info("PUT OK: #{data}")
+end
+
+def update_settings(settings)
+  settings.each do|s|
+    results = @client['settings'].get(:params => { :search => s['name'] })
+    server_setting = JSON.load(results)[0]
+    puts server_setting
+    update( 'settings/'+server_setting['setting']['id'].to_s(), :setting => {
+              :value => s['value'] })
+  end
+end
+
 def usage
   puts "Usage: #{File.basename($0)} proxy | globals | hostgroups"
   puts " Multiple commands can be used at same time"
@@ -139,6 +157,8 @@ begin
       create_globals(@params['globals'])
     when 'hostgroups'
       create_hostgroups(@params['hostgroups'])
+    when 'settings'
+      update_settings(@params['settings'])
     else
       usage
     end

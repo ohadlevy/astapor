@@ -97,6 +97,7 @@ popd
 
 ruby foreman-setup.rb globals
 ruby foreman-setup.rb hostgroups
+ruby foreman-setup.rb settings
 
 # write client-register-to-foreman script
 # TODO don't hit yum unless packages are not installed

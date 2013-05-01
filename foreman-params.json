@@ -4,6 +4,10 @@
       "user": "admin",
       "passwd": "changeme"
     },
+    "settings": [{
+      "name": "puppetrun",
+      "value": "true"
+    }],
     "proxy": {
       "name": "proxy1",
       "host": "https://foreman_hostname:8443"

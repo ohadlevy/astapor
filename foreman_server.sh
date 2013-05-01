@@ -84,6 +84,9 @@ puppet apply --verbose -e "include puppet, puppet::server, passenger, foreman_pr
 
 popd
 
+# turn on certificate autosigning
+echo '*' >> /etc/puppet/autosign.conf
+
 # Configure defaults, host groups, proxy, etc
 sed -i "s/foreman_hostname/$PUPPETMASTER/" foreman-params.json
 ruby foreman-setup.rb proxy

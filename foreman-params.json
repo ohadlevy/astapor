@@ -29,7 +29,8 @@
       "mysql_root_password":    "changeme",
       "nova_db_password":       "changeme",
       "nova_user_password":     "changeme",
-      "cinder_user_password":     "changeme",
+      "cinder_db_password":     "changeme",
+      "cinder_user_password":   "changeme",
       "private_interface":      "EDIT ME: em1",
       "public_interface":       "EDIT ME: em2",
       "verbose":                "true"

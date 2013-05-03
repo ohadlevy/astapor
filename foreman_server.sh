@@ -70,9 +70,6 @@ augtool -s set /files/etc/puppet/puppet.conf/agent/server $PUPPETMASTER
 # Puppet Plugins
 augtool -s set /files/etc/puppet/puppet.conf/main/pluginsync true
 
-# TODO: correctly configure iptables
-service iptables stop
-
 workdir=/root
 pushd $workdir
 

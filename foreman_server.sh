@@ -70,9 +70,6 @@ augtool -s set /files/etc/puppet/puppet.conf/agent/server $PUPPETMASTER
 # Puppet Plugins
 augtool -s set /files/etc/puppet/puppet.conf/main/pluginsync true
 
-# TODO: correctly configure iptables
-service iptables stop
-
 workdir=/root
 pushd $workdir
 
@@ -113,6 +110,7 @@ yum-config-manager --enable rhel-6-server-optional-rpms
 yum clean all
 
 # install dependent packages
+yum install -y http://yum.theforeman.org/releases/latest/el6/x86_64/rubygems-1.8.10-1.el6.noarch.rpm
 yum install -y augeas puppet git policycoreutils-python
 
 # Set PuppetServer
@@ -129,6 +127,8 @@ fi
 # for older versions of puppet, also need to "touch /etc/puppet/namespace.auth"
 
 # check in to foreman
+puppet agent --test
+sleep 1
 puppet agent --test
 
 /etc/init.d/puppet start

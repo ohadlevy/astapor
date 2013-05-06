@@ -48,14 +48,11 @@ function install_pkgs {
 install_pkgs "yum-utils yum-rhn-plugin"
 
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+cp foreman_nightlies.repo /etc/yum.repos.d/
 yum-config-manager --enable rhel-6-server-optional-rpms
 
-# install puppetlabs repo
-yum -y install https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-7.noarch.rpm
-yum clean all
-
 # install dependent packages
-install_pkgs "augeas puppet git policycoreutils-python"
+install_pkgs "augeas ruby193-puppet git policycoreutils-python"
 
 # enable ip forwarding
 sudo sysctl -w net.ipv4.ip_forward=1
@@ -73,20 +70,22 @@ augtool -s set /files/etc/puppet/puppet.conf/main/pluginsync true
 workdir=/root
 pushd $workdir
 
-# Get foreman-installer modules
-git clone --recursive https://github.com/theforeman/foreman-installer.git $workdir/foreman-installer -b 1.1.1
-
-# Install Foreman
-puppet apply --verbose -e "include puppet, puppet::server, passenger, foreman_proxy, foreman" --modulepath=$workdir/foreman-installer
-
+# install formean
+pushd foreman-installer/
+scl enable ruby193 "puppet apply --verbose -e 'include puppet, puppet::server, passenger, foreman_proxy, foreman' --modulepath=./"
 popd
+
+
+############ SETUP MYSQL ###################
+
+###########################################
 
 # turn on certificate autosigning
 echo '*' >> /etc/puppet/autosign.conf
 
 # Configure defaults, host groups, proxy, etc
 sed -i "s/foreman_hostname/$PUPPETMASTER/" foreman-params.json
-ruby foreman-setup.rb proxy
+scl enable ruby193 "ruby foreman-setup.rb proxy"
 
 # install puppet modules
 mkdir -p /etc/puppet/modules/production
@@ -95,15 +94,15 @@ pushd /usr/share/foreman
 RAILS_ENV=production rake puppet:import:puppet_classes[batch]
 popd
 
-ruby foreman-setup.rb globals
-ruby foreman-setup.rb hostgroups
-ruby foreman-setup.rb settings
+scl enable ruby193 "ruby foreman-setup.rb globals"
+scl enable ruby193 "ruby foreman-setup.rb hostgroups"
+scl enable ruby193 "ruby foreman-setup.rb settings"
 
 # write client-register-to-foreman script
 # TODO don't hit yum unless packages are not installed
 cat >/tmp/foreman_client.sh <<EOF
 
-# start with a subscribed RHEL6 box
+# start with a subscribed RHEL7 box
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 rpm -Uvh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-7.noarch.rpm
 yum-config-manager --enable rhel-6-server-optional-rpms

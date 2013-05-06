@@ -1,0 +1,11 @@
+[nightly-foreman]
+name=foreman nightly
+baseurl=http://koji.katello.org/releases/yum/foreman-nightly/RHEL/6/x86_64/
+enabled=1
+gpgcheck=0
+
+[nightly-katello]
+name=katello nightly
+baseurl=http://fedorapeople.org/groups/katello/releases/yum/nightly/RHEL/6Server/x86_64/
+enabled=1
+gpgcheck=0

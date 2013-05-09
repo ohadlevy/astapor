@@ -48,7 +48,7 @@ function install_pkgs {
 install_pkgs "yum-utils yum-rhn-plugin"
 
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-cp foreman_nightlies.repo /etc/yum.repos.d/
+cp foreman-nightlies.repo /etc/yum.repos.d/
 yum-config-manager --enable rhel-6-server-optional-rpms
 
 # install dependent packages
